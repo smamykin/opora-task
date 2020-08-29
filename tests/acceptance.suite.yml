@@ -1,0 +1,10 @@
+class_name: AcceptanceTester
+modules:
+    enabled:
+        - WebDriver:
+            url: https://test.opora-task.loc/
+            browser: firefox
+        - Yii2:
+            part: orm
+            entryScript: index-test.php
+            cleanup: false
