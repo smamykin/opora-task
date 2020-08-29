@@ -28,8 +28,10 @@
         "codeception/specify": "~0.4.6",
         "symfony/browser-kit": ">=2.7 <=4.2.4",
         "codeception/module-filesystem": "^1.0.0",
-        "codeception/module-yii2": "^1.0.0",
-        "codeception/module-asserts": "^1.0.0"
+        "codeception/module-yii2": "^1.1",
+        "codeception/module-asserts": "^1.0.0",
+        "codeception/module-phpbrowser": "^1.0",
+        "codeception/module-webdriver": "^1.1"
     },
     "config": {
         "process-timeout": 1800,
@@ -67,5 +69,12 @@
             "type": "composer",
             "url": "https://asset-packagist.org"
         }
-    ]
+    ],
+    "autoload-dev": {
+        "psr-4": {
+            "App\\Test\\Acceptance": "tests/acceptance",
+            "App\\Test\\Functional": "tests/functional",
+            "App\\Test\\Unit": "tests/unit"
+        }
+    }
 }
