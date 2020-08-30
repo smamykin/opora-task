@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\AuthorDataProviderBuilder;
 use app\models\PostDataProviderBuilder;
 use Exception;
 use Throwable;
@@ -133,6 +134,18 @@ class PostController extends Controller
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
+    }
+
+    public function actionAuthors()
+    {
+        $sort = (string)Yii::$app->request->get('sort');
+
+        return $this->render(
+            'authorList',
+            [
+                'dataProvider' => Yii::$app->get(AuthorDataProviderBuilder::class)->build($sort),
+            ]
+        );
     }
 
     /**
