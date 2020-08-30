@@ -32,7 +32,7 @@ class PostView extends \yii\db\ActiveRecord
             [['post_id'], 'required'],
             [['post_id'], 'integer'],
             [['created_at'], 'safe'],
-            [['post_id'], 'exist', 'skipOnError' => true, 'targetClass' => Post::className(), 'targetAttribute' => ['post_id' => 'id']],
+            [['post_id'], 'exist', 'skipOnError' => true, 'targetClass' => Post::class, 'targetAttribute' => ['post_id' => 'id']],
         ];
     }
 
@@ -55,6 +55,6 @@ class PostView extends \yii\db\ActiveRecord
      */
     public function getPost()
     {
-        return $this->hasOne(Post::className(), ['id' => 'post_id']);
+        return $this->hasOne(Post::class, ['id' => 'post_id']);
     }
 }

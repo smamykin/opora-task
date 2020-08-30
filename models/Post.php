@@ -35,7 +35,7 @@ class Post extends \yii\db\ActiveRecord
             [['author_id'], 'required'],
             [['author_id'], 'integer'],
             [['title'], 'string', 'max' => 255],
-            [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['author_id' => 'id']],
+            [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['author_id' => 'id']],
         ];
     }
 
@@ -59,7 +59,7 @@ class Post extends \yii\db\ActiveRecord
      */
     public function getAuthor()
     {
-        return $this->hasOne(User::className(), ['id' => 'author_id']);
+        return $this->hasOne(User::class, ['id' => 'author_id']);
     }
 
     /**
@@ -69,6 +69,6 @@ class Post extends \yii\db\ActiveRecord
      */
     public function getPostViews()
     {
-        return $this->hasMany(PostView::className(), ['post_id' => 'id'])->inverseOf('post');
+        return $this->hasMany(PostView::class, ['post_id' => 'id'])->inverseOf('post');
     }
 }
