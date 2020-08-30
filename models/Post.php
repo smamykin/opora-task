@@ -81,4 +81,12 @@ class Post extends \yii\db\ActiveRecord
     {
         return $this->hasMany(PostView::class, ['post_id' => 'id'])->inverseOf('post');
     }
+
+    public function getPostViewsCount()
+    {
+        return PostView::find()
+            ->select('COUNT(*) as count')
+            ->where(['post_id' => $this->id])
+            ->scalar();
+    }
 }
