@@ -3,6 +3,7 @@
 namespace app\models;
 
 use DateTimeImmutable;
+use Exception;
 use yii\data\SqlDataProvider;
 use yii\db\Connection;
 
@@ -18,54 +19,26 @@ class PostDataProviderBuilder implements DataProviderBuilderInterface
         $this->db = $db;
     }
 
+    /**
+     * @param string $sort
+     * @return SqlDataProvider
+     * @throws \yii\db\Exception
+     * @throws Exception
+     */
     public function build(string $sort): SqlDataProvider
     {
-        $createdAt = null;
-
-        if ($sort) {
-            $sort = '-' === $sort[0] ? mb_substr($sort, 1) : $sort;
-
-            $map = [
-                '2hours' => '-2 hours',
-                '3days' => '-3 days',
-                '5days' => '-5 days',
-                '10days' => '-10 days',
-                'default' => '',
-            ];
-            if (isset($map[$sort])) {
-                $sort = $map[$sort];
-            }
-        }
-
-        $createdAt = $sort ? (new DateTimeImmutable($sort))->format('Y-m-d H:i:s') : '';
-        $where = $createdAt ? ' WHERE pv.created_at > :created_at ' : '';
-
-        $query = $this->getQuery($where);
-        $totalCount = $this->db
-            ->createCommand("SELECT COUNT(*) FROM ({$query}) c")
-            ->bindParam(':created_at', $createdAt)
-            ->queryScalar();
-        $commonSortParam = [
-            'asc' => ['countOfView' => SORT_ASC],
-            'desc' => ['countOfView' => SORT_DESC],
-            'default' => SORT_DESC,
-        ];
+        $createdAt =  $this->getDateTimeBySortString($sort);
+        $query = $this->getQuery($createdAt);
 
         return new SqlDataProvider(
             [
                 'sql' => $query,
-                'totalCount' => $totalCount,
+                'totalCount' => $this->getTotalCountForQuery($query, $createdAt),
                 'params' => [
                     ':created_at' => $createdAt,
                 ],
                 'sort' => [
-                    'attributes' => [
-                        '2hours' => array_merge($commonSortParam, ['label'=> 'Популярное за два часа']),
-                        '3days' =>  array_merge($commonSortParam, ['label'=> 'Популярное за три дня']),
-                        '5days' =>  array_merge($commonSortParam, ['label'=> 'Популярное за пять дней']),
-                        '10days' =>  array_merge($commonSortParam, ['label'=> 'Популярное за десять дней']),
-                        'default' =>  array_merge($commonSortParam, ['label'=> 'Популярное за все время']),
-                    ],
+                    'attributes' => $this->getSortAttr(),
                     'defaultOrder' => [
                         'default' => SORT_DESC,
                     ]
@@ -75,11 +48,13 @@ class PostDataProviderBuilder implements DataProviderBuilderInterface
     }
 
     /**
-     * @param string $where
+     * @param string $createdAt
      * @return string
      */
-    private function getQuery(string $where): string
+    private function getQuery(string $createdAt): string
     {
+        $where = $createdAt ? ' WHERE pv.created_at > :created_at ' : '';
+
         return <<<SQL
 SELECT p.id, p.title, COUNT(pv.post_id) as countOfView
 FROM post as p
@@ -88,5 +63,77 @@ INNER JOIN post_view as pv
 {$where}
 GROUP BY p.id
 SQL;
+    }
+
+    /**
+     * @param string $sort
+     * @return string
+     * @throws Exception
+     */
+    private function getDateTimeBySortString(string $sort): string
+    {
+        if ($sort) {
+            $sort = '-' === $sort[0] ? mb_substr($sort, 1) : $sort;
+        }
+
+        $map = [
+            self::SORT_QUERY_VAR_2H => '-2 hours',
+            self::SORT_QUERY_VAR_3D => '-3 days',
+            self::SORT_QUERY_VAR_5D => '-5 days',
+            self::SORT_QUERY_VAR_10D => '-10 days',
+        ];
+
+        if (isset($map[$sort])) {
+            return (new DateTimeImmutable($map[$sort]))->format('Y-m-d H:i:s');
+        }
+
+        return '';
+    }
+
+    /**
+     * @param string $query
+     * @param string $createdAt
+     * @return false|string|\yii\db\DataReader|null
+     * @throws \yii\db\Exception
+     */
+    private function getTotalCountForQuery(string $query, string $createdAt)
+    {
+        return $this->db
+            ->createCommand("SELECT COUNT(*) FROM ({$query}) c")
+            ->bindParam(':created_at', $createdAt)
+            ->queryScalar();
+    }
+
+    /**
+     * @return array
+     */
+    private function getSortAttr(): array
+    {
+        $commonSortParam = [
+            'asc' => ['countOfView' => SORT_ASC],
+            'desc' => ['countOfView' => SORT_DESC],
+            'default' => SORT_DESC,
+        ];
+
+        $attrs = [];
+        foreach ($this->getLabels() as $attrName => $label) {
+            $attrs[$attrName] = array_merge($commonSortParam, ['label' => $label]);
+        }
+
+        return $attrs;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getLabels(): array
+    {
+        return [
+            self::SORT_QUERY_VAR_2H => 'Популярное за два часа',
+            self::SORT_QUERY_VAR_3D => 'Популярное за три дня',
+            self::SORT_QUERY_VAR_5D => 'Популярное за пять дней',
+            self::SORT_QUERY_VAR_10D => 'Популярное за десять дней',
+            self::SORT_QUERY_VAR_ALL => 'Популярное за все время',
+        ];
     }
 }
