@@ -1,5 +1,6 @@
 <?php
 
+use app\models\AuthorDataProviderBuilder;
 use app\models\PostDataProviderBuilder;
 
 $db = require __DIR__ . '/db.php';
@@ -38,6 +39,9 @@ return [
     'db' => $db,
     PostDataProviderBuilder::class => function () {
         return new PostDataProviderBuilder(Yii::$app->db);
+    },
+    AuthorDataProviderBuilder::class => function () {
+        return new AuthorDataProviderBuilder(Yii::$app->db);
     },
     /*
     'urlManager' => [
