@@ -16,7 +16,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * PostController implements the CRUD actions for Post model.
+ * В контроллере содержаться экшены, которые касаются MVP указанных в требованиях.
  */
 class PostController extends Controller
 {
@@ -136,6 +136,10 @@ class PostController extends Controller
         return $this->redirect(['index']);
     }
 
+    /**
+     * @return string
+     * @throws InvalidConfigException
+     */
     public function actionAuthors()
     {
         $sort = (string)Yii::$app->request->get('sort');

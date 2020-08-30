@@ -2,6 +2,10 @@
 
 namespace app\models;
 
+/**
+ * Позволяет получить DataProvider для вывода списка авторов.
+ * @see AbstractDataProviderBuilder
+ */
 class AuthorDataProviderBuilder extends AbstractDataProviderBuilder
 {
     /**

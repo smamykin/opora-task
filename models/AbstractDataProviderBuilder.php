@@ -7,8 +7,19 @@ use Exception;
 use yii\data\SqlDataProvider;
 use yii\db\Connection;
 
+/**
+ * Позволяет получить настроенный DataProvider для вывода списка с пагинацией и сортировкой по числу просмотров за период.
+ *
+ * @see AuthorDataProviderBuilder
+ * @see PostDataProviderBuilder
+ */
 abstract class AbstractDataProviderBuilder implements DataProviderBuilderInterface
 {
+    private const SORT_QUERY_VAR_10D = '10days';
+    private const SORT_QUERY_VAR_3D = '3days';
+    private const SORT_QUERY_VAR_ALL = 'default';
+    private const SORT_QUERY_VAR_5D = '5days';
+    private const SORT_QUERY_VAR_2H = '2hours';
 
     /**
      * @var Connection
@@ -104,11 +115,11 @@ abstract class AbstractDataProviderBuilder implements DataProviderBuilderInterfa
     protected function getLabels(): array
     {
         return [
-            DataProviderBuilderInterface::SORT_QUERY_VAR_2H => 'Популярное за два часа',
-            DataProviderBuilderInterface::SORT_QUERY_VAR_3D => 'Популярное за три дня',
-            DataProviderBuilderInterface::SORT_QUERY_VAR_5D => 'Популярное за пять дней',
-            DataProviderBuilderInterface::SORT_QUERY_VAR_10D => 'Популярное за десять дней',
-            DataProviderBuilderInterface::SORT_QUERY_VAR_ALL => 'Популярное за все время',
+            self::SORT_QUERY_VAR_2H => 'Популярное за два часа',
+            self::SORT_QUERY_VAR_3D => 'Популярное за три дня',
+            self::SORT_QUERY_VAR_5D => 'Популярное за пять дней',
+            self::SORT_QUERY_VAR_10D => 'Популярное за десять дней',
+            self::SORT_QUERY_VAR_ALL => 'Популярное за все время',
         ];
     }
 
