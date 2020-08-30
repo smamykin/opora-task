@@ -36,6 +36,9 @@ return [
         ],
     ],
     'db' => $db,
+    PostDataProviderBuilder::class => function () {
+        return new PostDataProviderBuilder(Yii::$app->db);
+    },
     /*
     'urlManager' => [
         'enablePrettyUrl' => true,
