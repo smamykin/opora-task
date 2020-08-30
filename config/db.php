@@ -2,7 +2,7 @@
 
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=localhost;dbname=opora_task',
+    'dsn' => 'mysql:host=127.0.0.1;port=3306;dbname=opora_task',
     'username' => 'root',
     'password' => '',
     'charset' => 'utf8',
