@@ -76,7 +76,7 @@
             "App\\Test\\Acceptance\\": "tests/acceptance",
             "App\\Test\\Functional\\": "tests/functional",
             "App\\Test\\Unit\\": "tests/unit",
-            "App\\Test\\Fixtures\\": "tests/fixtures"
+            "app\\tests\\fixtures": "tests/fixtures"
         }
     }
 }
