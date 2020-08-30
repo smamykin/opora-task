@@ -29,8 +29,8 @@ $this->params['breadcrumbs'][] = $this->title;
             ob_start();
             ?>
             <div>
-                <?=Html::a(Html::encode($model->title), ['view', 'id' => $model->id]);?>
-                <span class="bg-warning" title="Просмотры"><?=$model->postViewsCount;?></span>
+                <?=Html::a(Html::encode($model['title']), ['view', 'id' => $model['id']]);?>
+                <span class="bg-warning" title="Просмотры"><?=$model['countOfView']?></span>
             </div>
 
             <?php return ob_get_clean();
