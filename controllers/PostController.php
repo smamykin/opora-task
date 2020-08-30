@@ -2,15 +2,13 @@
 
 namespace app\controllers;
 
-use DateTimeImmutable;
+use app\models\PostDataProviderBuilder;
+use Exception;
 use Throwable;
 use Yii;
 use app\models\Post;
 use app\models\User;
 use yii\base\InvalidConfigException;
-use yii\data\Sort;
-use yii\data\SqlDataProvider;
-use yii\db\Exception;
 use yii\db\StaleObjectException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -43,87 +41,12 @@ class PostController extends Controller
      */
     public function actionIndex()
     {
-        $sort = Yii::$app->request->get('sort');
-        $createdAt = null;
-        $commonSortParam = [
-            'asc' => ['countOfView' => SORT_ASC],
-            'desc' => ['countOfView' => SORT_DESC],
-            'default' => SORT_DESC,
-        ];
-        $sorter = new Sort([
-           'attributes' => [
-               '2hours' => array_merge($commonSortParam, ['label'=> 'Популярное за два часа']),
-               '3days' =>  array_merge($commonSortParam, ['label'=> 'Популярное за три дня']),
-               '5days' =>  array_merge($commonSortParam, ['label'=> 'Популярное за пять дней']),
-               '10days' =>  array_merge($commonSortParam, ['label'=> 'Популярное за десять дней']),
-               'default' =>  array_merge($commonSortParam, ['label'=> 'Популярное за все время']),
-           ],
-           'defaultOrder' => [
-               'default' => SORT_DESC,
-           ]
-       ]);
-        $order = 'desc';
-        if ($sort) {
-            if ('-' === $sort[0]) {
-                $order = 'desc';
-                $sort = mb_substr($sort, 1);
-            } else {
-                $order = 'asc';
-            }
-            $format = 'Y-m-d H:i:s';
-            switch ($sort) {
-                case '2hours':
-                    $sort = '-2 hours';
-                    break;
-                case '3days':
-                    $sort = '-3 days';
-                    break;
-                case '5days':
-                    $sort = '-5 days';
-                    break;
-                case '10days':
-                    $sort = '-10 days';
-                    break;
-                case 'default':
-                    $sort = null;
-                    break;
-            }
-            $createdAt = $sort ? (new DateTimeImmutable($sort))->format($format) : null;
-
-        }
-        $where = $createdAt ? ' WHERE pv.created_at > :created_at ' : '';
-        $orderBy = ' ORDER BY countOfView ' . $order ;
-
-        $query = <<<SQL
-SELECT p.id, p.title, COUNT(pv.post_id) as countOfView
-FROM post as p
-INNER JOIN post_view as pv
-    ON p.id = pv.post_id
-{$where}
-GROUP BY p.id
-{$orderBy}
-SQL;
-
-        $totalCount = Yii::$app->db
-            ->createCommand("SELECT COUNT(*) FROM ({$query}) c")
-            ->bindParam(':created_at', $createdAt)
-            ->queryScalar();
-
-        $dataProvider = new SqlDataProvider(
-            [
-                'sql' => $query,
-                'totalCount' => $totalCount,
-                'params' => [
-                    ':created_at' => $createdAt,
-                ],
-            ]
-        );
+        $sort = (string)Yii::$app->request->get('sort');
 
         return $this->render(
             'index',
             [
-                'dataProvider' => $dataProvider,
-                'sorter' => $sorter,
+                'dataProvider' => Yii::$app->get(PostDataProviderBuilder::class)->build($sort),
             ]
         );
     }
