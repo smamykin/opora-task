@@ -14,6 +14,7 @@ class CrudPostCest
     public function seePage(AcceptanceTester $I)
     {
         $I->amOnPage(Url::toRoute(['/post/index']));
+        $I->amGoingTo('Create Post');
         $I->see('Posts');
         $I->wantTo('Create new post');
         $I->click('Create Post');
@@ -26,6 +27,8 @@ class CrudPostCest
         $I->fillField('Post[author_name]', 'Петрович');
         $I->click('Save');
         $I->wait(1);
+        $I->amGoingTo('Update Post');
+        $I->see('Posts');
         $I->click('Update');
         $postId = $I->grabFromCurrentUrl('#&id=(\d+)#');
         $I->seeInField('Post[title]', $title);
@@ -38,8 +41,16 @@ class CrudPostCest
         $I->fillField('Post[text]', $newText);
         $I->click('Save');
         $I->wait(1);
-        $I->seeInSource("<td>$newText</td>");
+        $I->seeInSource("<td>$newTitle</td>");
         $I->seeInSource("<td>$newText</td>");
         $I->seeInSource("<td>Петрович</td>");
+        $I->amGoingTo('Delete Post');
+        $I->click('Delete');
+        $I->acceptPopup();
+        $I->wait(1);
+        $I->dontSee($newTitle);
+        $I->amGoingTo('Check the post page doesn\'t exist.');
+        $I->amOnPage('/index.php?r=post/view&id=' . $postId);
+        $I->see('Not Found');
     }
 }
