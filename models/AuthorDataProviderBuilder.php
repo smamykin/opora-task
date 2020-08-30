@@ -2,19 +2,19 @@
 
 namespace app\models;
 
-class PostDataProviderBuilder extends AbstractDataProviderBuilder
+class AuthorDataProviderBuilder extends AbstractDataProviderBuilder
 {
-
     /**
      * @inheritDoc
      */
     protected function getQuery(bool $isSetTime): string
     {
         $where = $isSetTime ? ' WHERE pv.created_at > :created_at ' : '';
-
         return <<<SQL
-SELECT p.id, p.title, COUNT(pv.post_id) as countOfView
-FROM post as p
+SELECT u.name, u.id, COUNT(pv.id) as countOfView
+FROM user as u
+INNER JOIN post as p
+    ON u.id = p.author_id
 INNER JOIN post_view as pv
     ON p.id = pv.post_id
 {$where}
