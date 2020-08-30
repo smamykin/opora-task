@@ -2,6 +2,10 @@
 
 namespace app\models;
 
+/**
+ * Позволяет получить DataProvider для списка постов.
+ * @see AbstractDataProviderBuilder
+ */
 class PostDataProviderBuilder extends AbstractDataProviderBuilder
 {
 
