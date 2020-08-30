@@ -22,7 +22,14 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'itemOptions' => ['class' => 'item'],
         'itemView' => function ($model, $key, $index, $widget) {
-            return Html::a(Html::encode($model->title), ['view', 'id' => $model->id]);
+            ob_start();
+            ?>
+            <div>
+                <?=Html::a(Html::encode($model->title), ['view', 'id' => $model->id]);?>
+                <span class="bg-warning" title="Просмотры"><?=$model->postViewsCount;?></span>
+            </div>
+
+            <?php return ob_get_clean();
         },
     ]) ?>
 
