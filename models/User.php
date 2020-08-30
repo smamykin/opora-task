@@ -14,6 +14,8 @@ use Yii;
  */
 class User extends \yii\db\ActiveRecord
 {
+    public const UNKNOWN_NAME = 'unknown';//stored in db
+
     /**
      * {@inheritdoc}
      */
