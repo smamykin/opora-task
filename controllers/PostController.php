@@ -41,12 +41,12 @@ class PostController extends Controller
      */
     public function actionIndex()
     {
-        $sort = Yii::$app->request->get('sort');
+        $sort = (string)Yii::$app->request->get('sort');
 
         return $this->render(
             'index',
             [
-                'dataProvider' => Yii::$container->get(PostDataProviderBuilder::class)->build($sort),
+                'dataProvider' => Yii::$app->get(PostDataProviderBuilder::class)->build($sort),
             ]
         );
     }
