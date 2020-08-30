@@ -32,8 +32,7 @@ class Post extends \yii\db\ActiveRecord
     {
         return [
             [['text'], 'string'],
-            [['author_id'], 'required'],
-            [['author_id'], 'integer'],
+            [['author_id', 'text', 'title'], 'required'],
             [['title'], 'string', 'max' => 255],
             [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['author_id' => 'id']],
         ];
@@ -60,6 +59,17 @@ class Post extends \yii\db\ActiveRecord
     public function getAuthor()
     {
         return $this->hasOne(User::class, ['id' => 'author_id']);
+    }
+
+    /**
+     * @param User $user
+     * @return $this
+     */
+    public function setAuthor(User $user)
+    {
+        $this->author_id = $user->id;
+
+        return $this;
     }
 
     /**
